@@ -1,0 +1,37 @@
+services:
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"     # AMQP (os serviços)
+      - "15672:15672"   # painel web: http://localhost:15672  (usuário e senha: guest)
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  n8n:
+    image: n8nio/n8n
+    ports:
+      - "5678:5678"     # editor e webhooks: http://localhost:5678
+    environment:
+      - GENERIC_TIMEZONE=America/Sao_Paulo
+      - TZ=America/Sao_Paulo
+      - N8N_SECURE_COOKIE=false
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+  mailpit:            # caixa de e-mail de testes: recebe tudo e NADA sai para a internet
+    image: axllent/mailpit
+    ports:
+      - "1025:1025"     # SMTP (o n8n envia por aqui)
+      - "8025:8025"     # caixa de entrada: http://localhost:8025
+
+volumes:
+  mongo_data:
+  rabbitmq_data:
+  n8n_data:

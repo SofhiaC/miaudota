@@ -1,0 +1,42 @@
+{
+  "name": "Miaudota - enviar e-mail",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "miaudota-email",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "5f1a2c10-0000-4000-8000-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "5f1a2c10-0000-4000-8000-0000000000aa"
+    },
+    {
+      "parameters": {
+        "fromEmail": "Miaudota <nao-responda@miaudota.local>",
+        "toEmail": "={{ $json.body.destinatario }}",
+        "subject": "={{ $json.body.assunto }}",
+        "emailFormat": "both",
+        "text": "={{ $json.body.texto }}",
+        "html": "={{ $json.body.html }}",
+        "options": {}
+      },
+      "id": "5f1a2c10-0000-4000-8000-000000000002",
+      "name": "Enviar e-mail",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [320, 0]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Enviar e-mail", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}
