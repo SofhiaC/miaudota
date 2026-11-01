@@ -66,6 +66,22 @@ o n8n pode trocar o texto, adicionar canais ou mudar o provedor sem tocar no có
 **Falhas:** se o n8n estiver fora do ar ou o workflow não estiver ativo, a função tenta 3 vezes e a mensagem vai para a fila de descarte
 `notificacao.<Evento>.dlq` (visível no painel do RabbitMQ). A ação do usuário nunca é desfeita. Depois de resolver, `npm run notificacao:reenviar` devolve as mensagens para a fila.
 
+## App mobile (visual)
+
+Layout do Figma aplicado em `mobile/`: amarelo `#FFE880`, barra do topo `#4E4623`, botões `#241A13`, fonte **Madimi One** (logo, títulos, rótulos e botões; `@expo-google-fonts/madimi-one`).
+
+| Aba (barra inferior) | Tela |
+|---|---|
+| ❤ | Favoritos: Remover / Solicitar Adoção |
+| 🕒 | Pedidos: Enviados por Mim / Recebidos |
+| ⊕ (centro) | Descobrir: pilha de cartões estilo "tinder". Arraste para a direita (ou ❤) para curtir, para a esquerda (ou ✕) para pular, ou toque no avião de papel para solicitar a adoção |
+| 📍 | Feiras: Lista / Mapa |
+| 👤 | Meus animais: Cadastrar Animal |
+| 👤 (topo) | Perfil: Sair / Excluir Minha Conta |
+
+ONG não adota: vê só Pedidos (recebidos), Feiras e Meus animais, e é a única que vê "Cadastrar Feira".
+Tudo em `mobile/tema.js` (cores e fontes) e `mobile/componentes/` (peças reutilizáveis); as ilustrações estão em `mobile/assets/imagens/`.
+
 ## Responsabilidades
 
 | Processo | Porta | Faz |

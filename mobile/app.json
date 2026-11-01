@@ -2,7 +2,9 @@
   "expo": {
     "name": "Miaudota",
     "slug": "miaudota",
-    "version": "0.0.2",
+    "version": "0.0.6",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFE880",
     "plugins": [
       ["expo-location", { "locationWhenInUsePermission": "O Miaudota usa sua localização para mostrar feiras de adoção perto de você." }],
       "expo-secure-store"

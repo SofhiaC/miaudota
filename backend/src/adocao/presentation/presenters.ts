@@ -17,6 +17,9 @@ export const solicitacaoParaJson = (d: SolicitacaoDetalhada) => ({
   status: d.solicitacao.status,
   id_animal: d.solicitacao.idAnimal,
   animalNome: d.animalNome,
+  animal: d.animal
+    ? { nome: d.animal.nome, especie: d.animal.especie, idade: d.animal.idade, descricao: d.animal.descricao }
+    : undefined,
   adotante: d.adotante,
   createdAt: d.solicitacao.criadoEm,
 });

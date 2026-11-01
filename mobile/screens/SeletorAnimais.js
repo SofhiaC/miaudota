@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { api } from '../api';
-import { s } from '../estilos';
+import Caixa from '../componentes/Caixa';
+import { cores, texto } from '../tema';
+import { capitalizar } from '../componentes/util';
 
-/** Lista os animais disponíveis do usuário e deixa marcar quais vão para a feira. */
+/** Lista os animais disponíveis da ONG e deixa marcar quais vão para a feira. */
 export default function SeletorAnimais({ selecionados, onChange }) {
   const [lista, setLista] = useState(null);
 
@@ -13,20 +15,21 @@ export default function SeletorAnimais({ selecionados, onChange }) {
       .catch(() => setLista([]));
   }, []);
 
-  if (!lista) return <ActivityIndicator />;
-  if (!lista.length) return <Text style={s.rotulo}>Você não tem animais disponíveis para levar à feira.</Text>;
+  if (!lista) return <ActivityIndicator color={cores.escuro} />;
+  if (!lista.length) return <Text style={texto.corpo}>Você não tem animais disponíveis para levar à feira.</Text>;
 
-  const alternar = (id) =>
-    onChange(selecionados.includes(id) ? selecionados.filter((x) => x !== id) : [...selecionados, id]);
+  const alternar = (id) => onChange(selecionados.includes(id) ? selecionados.filter((x) => x !== id) : [...selecionados, id]);
 
   return (
-    <View style={{ gap: 6 }}>
-      <Text style={s.rotulo}>Animais que você levará:</Text>
+    <View style={e.lista}>
+      <Text style={texto.rotulo}>Animais que você levará</Text>
       {lista.map((a) => (
-        <TouchableOpacity key={a._id} onPress={() => alternar(a._id)}>
-          <Text>{selecionados.includes(a._id) ? '☑' : '☐'} {a.nome} ({a.especie})</Text>
-        </TouchableOpacity>
+        <Caixa key={a._id} marcado={selecionados.includes(a._id)} onAlternar={() => alternar(a._id)}>
+          {a.nome} ({capitalizar(a.especie)})
+        </Caixa>
       ))}
     </View>
   );
 }
+
+const e = StyleSheet.create({ lista: { gap: 8 } });

@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Alert, Button, Switch, Text, TextInput, View } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { api } from '../api';
-import { s } from '../estilos';
+import Botao from '../componentes/Botao';
+import CampoDeTexto from '../componentes/CampoDeTexto';
+import Caixa from '../componentes/Caixa';
+import { cores, fonte, texto } from '../tema';
 
 export default function Login({ onEntrar }) {
   const [cadastro, setCadastro] = useState(false);
@@ -26,27 +29,71 @@ export default function Login({ onEntrar }) {
   }
 
   return (
-    <View style={s.box}>
-      <Text style={s.titulo}>Miaudota 🐾</Text>
-      {cadastro && <TextInput style={s.input} placeholder="Nome" value={nome} onChangeText={setNome} />}
-      <TextInput style={s.input} placeholder="E-mail" autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} />
-      <TextInput style={s.input} placeholder="Senha (mín. 8 caracteres)" secureTextEntry value={senha} onChangeText={setSenha} />
-      {cadastro && (
-        <>
-          <View style={s.linha}>
-            <Button title="Sou pessoa" color={tipo === 'PESSOA' ? 'green' : 'gray'} onPress={() => setTipo('PESSOA')} />
-            <Button title="Sou ONG" color={tipo === 'ONG' ? 'green' : 'gray'} onPress={() => setTipo('ONG')} />
-          </View>
-          <View style={s.linha}>
-            <Switch value={consentimento} onValueChange={setConsentimento} />
-            <Text style={{ flex: 1, marginLeft: 8 }}>
-              Concordo com o tratamento dos meus dados pessoais conforme a LGPD
-            </Text>
-          </View>
-        </>
-      )}
-      <Button title={cadastro ? 'Cadastrar' : 'Entrar'} onPress={enviar} disabled={enviando} />
-      <Button title={cadastro ? 'Já tenho conta' : 'Criar conta'} onPress={() => setCadastro(!cadastro)} />
-    </View>
+    <KeyboardAvoidingView style={e.tela} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <ScrollView contentContainerStyle={e.conteudo} keyboardShouldPersistTaps="handled">
+        <Image source={require('../assets/imagens/mascote.png')} style={e.mascote} accessibilityLabel="Mascote do Miaudota" />
+        <Text style={[texto.logo, e.logo]}>miaudota</Text>
+
+        <View style={e.formulario}>
+          {cadastro && <CampoDeTexto rotulo="Nome" icone="pessoa" value={nome} onChangeText={setNome} autoCapitalize="words" />}
+          <CampoDeTexto
+            rotulo="E-mail"
+            icone="email"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            autoCorrect={false}
+          />
+          <CampoDeTexto
+            rotulo="Senha"
+            icone="senha"
+            value={senha}
+            onChangeText={setSenha}
+            secureTextEntry
+            placeholder={cadastro ? 'mínimo de 8 caracteres' : undefined}
+          />
+
+          {cadastro && (
+            <>
+              <View>
+                <Text style={texto.rotulo}>Quem é você?</Text>
+                <View style={e.tipos}>
+                  <Botao titulo="Pessoa" tamanho="pequeno" variante={tipo === 'PESSOA' ? 'escuro' : 'claro'} onPress={() => setTipo('PESSOA')} style={e.tipo} />
+                  <Botao titulo="ONG" tamanho="pequeno" variante={tipo === 'ONG' ? 'escuro' : 'claro'} onPress={() => setTipo('ONG')} style={e.tipo} />
+                </View>
+              </View>
+              <Caixa marcado={consentimento} onAlternar={() => setConsentimento(!consentimento)}>
+                Concordo com o tratamento dos meus dados pessoais conforme a LGPD
+              </Caixa>
+            </>
+          )}
+
+          <Botao
+            titulo={cadastro ? 'Cadastrar' : 'Entrar'}
+            variante="escuroAmarelo"
+            onPress={enviar}
+            carregando={enviando}
+            style={e.botao}
+          />
+
+          <Pressable onPress={() => setCadastro(!cadastro)} hitSlop={10} accessibilityRole="button">
+            <Text style={e.alternar}>{cadastro ? 'Já tenho conta' : 'Criar conta'}</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
+
+const e = StyleSheet.create({
+  tela: { flex: 1, backgroundColor: cores.fundo },
+  conteudo: { flexGrow: 1, alignItems: 'center', paddingHorizontal: 36, paddingTop: 56, paddingBottom: 40 },
+  mascote: { width: 130, height: 130 * (613 / 480) },
+  logo: { marginTop: 8, marginBottom: 28 },
+  formulario: { width: '100%', maxWidth: 420, gap: 14 },
+  tipos: { flexDirection: 'row', gap: 10 },
+  tipo: { flex: 1 },
+  botao: { marginTop: 10 },
+  alternar: { fontFamily: fonte.titulo, fontSize: 17, color: cores.escuro, textAlign: 'center', textDecorationLine: 'underline', marginTop: 4 },
+});

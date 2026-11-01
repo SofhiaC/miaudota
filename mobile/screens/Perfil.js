@@ -1,7 +1,8 @@
 import React from 'react';
-import { Alert, Button, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { api } from '../api';
-import { s } from '../estilos';
+import Botao from '../componentes/Botao';
+import { cores, fonte } from '../tema';
 
 export default function Perfil({ usuario, onSair }) {
   const ong = usuario.tipo === 'ONG';
@@ -13,10 +14,11 @@ export default function Perfil({ usuario, onSair }) {
       [
         { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Excluir', style: 'destructive',
+          text: 'Excluir',
+          style: 'destructive',
           onPress: async () => {
             try { await api.excluirConta(); await onSair(); }
-            catch (e) { Alert.alert('Erro', e.message); }
+            catch (erro) { Alert.alert('Erro', erro.message); }
           },
         },
       ],
@@ -24,12 +26,25 @@ export default function Perfil({ usuario, onSair }) {
   }
 
   return (
-    <View style={s.box}>
-      <Text style={s.nome}>{usuario.nome}</Text>
-      <Text>{usuario.email}</Text>
-      <Text style={s.rotulo}>{ong ? 'ONG' : 'Pessoa'}</Text>
-      <Button title="Sair" onPress={onSair} />
-      <Button title="Excluir minha conta" color="red" onPress={excluir} />
+    <View style={e.tela}>
+      <View style={e.dados}>
+        <Text style={e.nome}>{usuario.nome}</Text>
+        <Text style={e.email}>{usuario.email}</Text>
+        <Text style={e.tipo}>{ong ? 'ONG' : 'Pessoa'}</Text>
+      </View>
+      <View style={e.botoes}>
+        <Botao titulo="Sair" onPress={onSair} />
+        <Botao titulo="Excluir Minha Conta" variante="perigo" onPress={excluir} />
+      </View>
     </View>
   );
 }
+
+const e = StyleSheet.create({
+  tela: { flex: 1 },
+  dados: { padding: 28, gap: 2 },
+  nome: { fontFamily: fonte.titulo, fontSize: 30, color: cores.preto },
+  email: { fontSize: 18, color: cores.preto, fontWeight: '300' },
+  tipo: { fontSize: 14, color: cores.preto, fontWeight: '300' },
+  botoes: { alignSelf: 'center', width: '75%', maxWidth: 380, gap: 18, marginTop: 28 },
+});

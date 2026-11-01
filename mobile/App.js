@@ -1,37 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { StatusBar, StyleSheet, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
-import { setToken, setAoExpirar } from './api';
-import { s } from './estilos';
-import Login from './screens/Login';
-import Animais from './screens/Animais';
+import { MadimiOne_400Regular, useFonts } from '@expo-google-fonts/madimi-one';
+import { setAoExpirar, setToken } from './api';
+import BarraDeAbas from './componentes/BarraDeAbas';
+import Cabecalho from './componentes/Cabecalho';
+import Carregando from './componentes/Carregando';
+import { cores } from './tema';
+import Descobrir from './screens/Descobrir';
 import Favoritos from './screens/Favoritos';
-import MeusAnimais from './screens/MeusAnimais';
 import Feiras from './screens/Feiras';
-import Solicitacoes from './screens/Solicitacoes';
+import Login from './screens/Login';
+import MeusAnimais from './screens/MeusAnimais';
+import Pedidos from './screens/Pedidos';
 import Perfil from './screens/Perfil';
 
-// PESSOA adota e publica animais. ONG publica animais e promove feiras, mas não adota.
+// Ordem e ícones da barra inferior, como no layout. O ícone de perfil fica no topo.
 const ABAS_PESSOA = [
-  { id: 'animais', titulo: 'Animais' },
-  { id: 'favoritos', titulo: 'Favoritos' },
-  { id: 'meus', titulo: 'Meus animais' },
-  { id: 'feiras', titulo: 'Feiras' },
-  { id: 'solicitacoes', titulo: 'Pedidos' },
-  { id: 'perfil', titulo: 'Perfil' },
+  { id: 'favoritos', icone: 'favoritos', rotulo: 'Favoritos' },
+  { id: 'pedidos', icone: 'pedidos', rotulo: 'Pedidos' },
+  { id: 'descobrir', icone: 'descobrir', rotulo: 'Descobrir animais' },
+  { id: 'feiras', icone: 'feiras', rotulo: 'Feiras' },
+  { id: 'meus', icone: 'meus', rotulo: 'Meus animais' },
 ];
+// ONG não adota: sem Descobrir nem Favoritos.
 const ABAS_ONG = [
-  { id: 'meus', titulo: 'Meus animais' },
-  { id: 'feiras', titulo: 'Feiras' },
-  { id: 'solicitacoes', titulo: 'Pedidos' },
-  { id: 'perfil', titulo: 'Perfil' },
+  { id: 'pedidos', icone: 'pedidos', rotulo: 'Pedidos' },
+  { id: 'feiras', icone: 'feiras', rotulo: 'Feiras' },
+  { id: 'meus', icone: 'meus', rotulo: 'Meus animais' },
 ];
 
 function sessaoValida(r) {
   return !!(r && r.token && r.usuario && r.usuario.tipo);
 }
 
-export default function App() {
+function Aplicativo() {
   const [sessao, setSessao] = useState(null); // { token, usuario }
   const [carregando, setCarregando] = useState(true);
   const [aba, setAba] = useState(null);
@@ -69,30 +73,48 @@ export default function App() {
       .finally(() => setCarregando(false));
   }, []);
 
-  if (carregando) return <SafeAreaView style={s.tela}><ActivityIndicator size="large" /></SafeAreaView>;
-  if (!sessao) return <SafeAreaView style={s.tela}><Login onEntrar={entrar} /></SafeAreaView>;
+  if (carregando) return <View style={e.tela}><Carregando /></View>;
+
+  if (!sessao) {
+    return (
+      <View style={e.tela}>
+        <StatusBar barStyle="dark-content" backgroundColor={cores.fundo} />
+        <Login onEntrar={entrar} />
+      </View>
+    );
+  }
 
   const { usuario } = sessao;
   const abas = usuario.tipo === 'ONG' ? ABAS_ONG : ABAS_PESSOA;
-  const atual = aba ?? abas[0].id;
+  const inicial = usuario.tipo === 'ONG' ? 'meus' : 'descobrir';
+  const atual = aba ?? inicial;
 
   return (
-    <SafeAreaView style={s.tela}>
-      <View style={s.abas}>
-        {abas.map((a) => (
-          <TouchableOpacity key={a.id} style={[s.aba, atual === a.id && s.abaAtiva]} onPress={() => setAba(a.id)}>
-            <Text style={s.abaTexto}>{a.titulo}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+    <View style={e.tela}>
+      <StatusBar barStyle="light-content" backgroundColor={cores.cabecalho} />
+      <Cabecalho onIcone={() => setAba('perfil')} />
       <View style={{ flex: 1 }}>
-        {atual === 'animais' && <Animais />}
+        {atual === 'descobrir' && <Descobrir />}
         {atual === 'favoritos' && <Favoritos />}
-        {atual === 'meus' && <MeusAnimais />}
+        {atual === 'pedidos' && <Pedidos usuario={usuario} />}
         {atual === 'feiras' && <Feiras usuario={usuario} />}
-        {atual === 'solicitacoes' && <Solicitacoes usuario={usuario} />}
+        {atual === 'meus' && <MeusAnimais />}
         {atual === 'perfil' && <Perfil usuario={usuario} onSair={sair} />}
       </View>
-    </SafeAreaView>
+      <BarraDeAbas abas={abas} atual={atual} onSelecionar={setAba} />
+    </View>
   );
 }
+
+export default function App() {
+  const [fontesProntas, erroNaFonte] = useFonts({ MadimiOne_400Regular });
+  return (
+    <SafeAreaProvider>
+      {fontesProntas || erroNaFonte ? <Aplicativo /> : <View style={e.tela}><Carregando /></View>}
+    </SafeAreaProvider>
+  );
+}
+
+const e = StyleSheet.create({
+  tela: { flex: 1, backgroundColor: cores.fundo },
+});

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Animal } from '../domain/animal';
 import { Solicitacao } from '../domain/solicitacao';
 import { AnimalRepository } from '../domain/repositorios';
 import { ResumoUsuario, UsuarioGateway } from './usuario.gateway';
@@ -6,6 +7,7 @@ import { ResumoUsuario, UsuarioGateway } from './usuario.gateway';
 export type SolicitacaoDetalhada = {
   solicitacao: Solicitacao;
   animalNome?: string;
+  animal?: Animal;
   adotante?: { nome: string; email: string };
 };
 
@@ -18,7 +20,7 @@ export class DetalharSolicitacoes {
     if (!solicitacoes.length) return [];
 
     const animais = await this.animais.buscarPorIds([...new Set(solicitacoes.map((s) => s.idAnimal))]);
-    const nomes = new Map(animais.map((a) => [a.id, a.nome]));
+    const porId = new Map(animais.map((a) => [a.id, a]));
 
     const adotantes = new Map<string, { nome: string; email: string }>();
     if (incluirAdotante) {
@@ -31,7 +33,8 @@ export class DetalharSolicitacoes {
 
     return solicitacoes.map((s) => ({
       solicitacao: s,
-      animalNome: nomes.get(s.idAnimal),
+      animalNome: porId.get(s.idAnimal)?.nome,
+      animal: porId.get(s.idAnimal),
       adotante: adotantes.get(s.idAdotante),
     }));
   }
