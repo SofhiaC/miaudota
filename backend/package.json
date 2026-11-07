@@ -12,7 +12,8 @@
     "dev": "concurrently -k -n usuarios,adocao,geo,bff,gateway,notif -c blue,green,yellow,magenta,cyan,red \"node --watch dist/usuarios/main.js\" \"node --watch dist/adocao/main.js\" \"node --watch dist/geolocalizacao/main.js\" \"node --watch dist/bff-mobile/main.js\" \"node --watch dist/api-gateway/main.js\" \"node --watch dist/notificacao/main.js\"",
     "start:all": "npm run build && npm run dev",
     "start:notificacao": "node dist/notificacao/main.js",
-    "notificacao:reenviar": "node dist/notificacao/reenviar-descartadas.js"
+    "notificacao:reenviar": "node dist/notificacao/reenviar-descartadas.js",
+    "test": "tsc -p tsconfig.json && node --test \"dist/testes/*.test.js\""
   },
   "dependencies": {
     "@nestjs/common": "^10.4.0",

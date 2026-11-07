@@ -4,7 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { FiltroDeExcecoes } from './filtro-excecoes';
 
 /** Sobe um dos processos do sistema (cada serviço, o BFF e o gateway usam o mesmo roteiro). */
-export async function iniciarServico(modulo: any, nome: string, porta: number, opcoes: { cors?: boolean; swagger?: { titulo: string; descricao: string } } = {}) {
+export async function iniciarServico(modulo: any, nome: string, porta: number, opcoes: { cors?: boolean; swagger?: { titulo: string; descricao: string; ajustar?: (documento: any) => void } } = {}) {
   const app = await NestFactory.create(modulo);
   if (opcoes.cors) app.enableCors();
   app.useGlobalPipes(
@@ -26,7 +26,9 @@ export async function iniciarServico(modulo: any, nome: string, porta: number, o
       .addApiKey({ type: 'apiKey', name: 'x-usuario-id', in: 'header' }, 'usuario-id')
       .addApiKey({ type: 'apiKey', name: 'x-usuario-tipo', in: 'header', description: 'PESSOA ou ONG' }, 'usuario-tipo')
       .build();
-    SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, config));
+    const documento = SwaggerModule.createDocument(app, config);
+    opcoes.swagger.ajustar?.(documento); // permite acrescentar rotas que não são controllers Nest (ex.: as encaminhadas pelo BFF)
+    SwaggerModule.setup('docs', app, documento);
   }
   app.enableShutdownHooks();
   await app.listen(porta);

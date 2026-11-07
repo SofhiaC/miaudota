@@ -60,3 +60,11 @@ export function configSql() {
     criarBanco: (process.env.SQL_CRIAR_BANCO ?? (servidor === 'localhost' ? 'true' : 'false')) === 'true',
   };
 }
+
+/** Azure Function de enriquecimento (HTTP Trigger). A chave só é necessária na nuvem (authLevel "function"). */
+export function configFuncao() {
+  return {
+    url: process.env.FUNCTION_URL || 'http://localhost:7071/api/indicador-adocao',
+    chave: process.env.FUNCTION_KEY,
+  };
+}
