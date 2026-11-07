@@ -2,3 +2,6 @@ node_modules
 dist
 .expo
 .env
+
+# pastas geradas por scripts/montar-repositorios.py (cada uma vira um repositório próprio)
+repositorios

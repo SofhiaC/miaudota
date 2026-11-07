@@ -1,6 +1,6 @@
 import test, { describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, dirname, sep } from 'node:path';
 
 /**
@@ -10,7 +10,9 @@ import { join, relative, resolve, dirname, sep } from 'node:path';
  * (a seta aponta para quem pode ser importado: o domínio não depende de nada de fora dele).
  */
 const SRC = resolve(__dirname, '..', '..', 'src');
-const MODULOS = ['usuarios', 'adocao', 'geolocalizacao', 'notificacao'];
+// cada repositório leva só alguns serviços: as regras valem para os que existem na pasta src
+const MODULOS = ['usuarios', 'adocao', 'geolocalizacao', 'notificacao'].filter((m) => existsSync(join(SRC, m)));
+const SERVICOS_COM_CAMADAS = MODULOS.filter((m) => m !== 'notificacao');
 
 function arquivos(dir: string): string[] {
   return readdirSync(dir).flatMap((n) => {
@@ -37,7 +39,7 @@ const violacoes = (lista: string[]) => lista.length ? `Violações:\n  - ${lista
 
 describe('Clean Architecture: regra de dependência', () => {
   test('a estrutura esperada existe em cada serviço', () => {
-    for (const m of ['usuarios', 'adocao', 'geolocalizacao']) {
+    for (const m of SERVICOS_COM_CAMADAS) {
       for (const camada of ['domain', 'infrastructure', 'casos-de-uso']) {
         assert.ok(statSync(join(SRC, m, camada)).isDirectory(), `${m}/${camada} não existe`);
       }
@@ -134,7 +136,7 @@ describe('Vertical Slice', () => {
 
   test('cada fatia tem um use-case e, quando exposta por HTTP, o controller na mesma pasta', () => {
     const ruins: string[] = [];
-    for (const m of ['usuarios', 'adocao', 'geolocalizacao']) {
+    for (const m of SERVICOS_COM_CAMADAS) {
       const base = join(SRC, m, 'casos-de-uso');
       for (const fatia of readdirSync(base)) {
         const nomes = readdirSync(join(base, fatia));

@@ -11,7 +11,8 @@ import { AtualizarFeira } from '../geolocalizacao/casos-de-uso/atualizar-feira/a
 import { ExcluirFeira } from '../geolocalizacao/casos-de-uso/excluir-feira/excluir-feira.use-case';
 import { AnimaisGateway } from '../geolocalizacao/application/animais.gateway';
 import { UsuarioGateway as UsuarioGatewayGeo } from '../geolocalizacao/application/usuario.gateway';
-import { DONO, OUTRO, EventPublisherFake, FeiraRepositoryFake, emDias } from './fakes';
+import { DONO, OUTRO, EventPublisherFake, emDias } from './fakes-comum';
+import { FeiraRepositoryFake } from './fakes-geo';
 
 class AnimaisGatewayFake extends AnimaisGateway {
   constructor(private validos: number) { super(); }

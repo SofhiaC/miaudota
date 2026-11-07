@@ -7,10 +7,10 @@ import { ResponderSolicitacao } from '../adocao/casos-de-uso/responder-solicitac
 import { AtualizarAnimal } from '../adocao/casos-de-uso/atualizar-animal/atualizar-animal.use-case';
 import { ExcluirAnimal } from '../adocao/casos-de-uso/excluir-animal/excluir-animal.use-case';
 import { FavoritarAnimal } from '../adocao/casos-de-uso/favoritar-animal/favoritar-animal.use-case';
+import { ADOTANTE, DONO, OUTRO, EventPublisherFake } from './fakes-comum';
 import {
-  ADOTANTE, DONO, OUTRO, AnimalRepositoryFake, EventPublisherFake, FavoritoRepositoryFake,
-  SolicitacaoRepositoryFake, UsuarioGatewayFake, novoAnimal,
-} from './fakes';
+  AnimalRepositoryFake, FavoritoRepositoryFake, SolicitacaoRepositoryFake, UsuarioGatewayFake, novoAnimal,
+} from './fakes-adocao';
 
 describe('Domínio: Animal', () => {
   test('atualizar normaliza os campos (trim e espécie em minúsculas)', () => {
