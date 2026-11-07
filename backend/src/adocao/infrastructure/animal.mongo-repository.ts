@@ -66,7 +66,14 @@ export class AnimalMongoRepository implements AnimalRepository {
   }
 
   async salvar(animal: Animal) {
-    await this.model.updateOne({ _id: animal.id }, { disponivel: animal.disponivel });
+    await this.model.updateOne(
+      { _id: animal.id },
+      { nome: animal.nome, especie: animal.especie, idade: animal.idade, descricao: animal.descricao, disponivel: animal.disponivel },
+    );
+  }
+
+  async excluir(id: string) {
+    await this.model.deleteOne({ _id: id });
   }
 
   async excluirDoDono(idDono: string) {

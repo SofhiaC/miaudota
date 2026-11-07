@@ -3,13 +3,13 @@ import { RegraDeNegocioError } from '../../shared/errors';
 export class Feira {
   constructor(
     public readonly id: string,
-    public readonly nome: string,
-    public readonly descricao: string | undefined,
-    public readonly endereco: string,
-    public readonly latitude: number,
-    public readonly longitude: number,
-    public readonly dataInicio: Date,
-    public readonly dataFim: Date,
+    public nome: string,
+    public descricao: string | undefined,
+    public endereco: string,
+    public latitude: number,
+    public longitude: number,
+    public dataInicio: Date,
+    public dataFim: Date,
     public readonly idOng: string,
     public animais: string[], // ids dos animais (referência lógica ao serviço de adoção)
   ) {}
@@ -32,7 +32,31 @@ export class Feira {
   definirAnimais(ids: string[]) {
     this.animais = [...new Set(ids)];
   }
+
+  /** Atualiza os dados da feira (a ONG dona e os animais têm operações próprias). */
+  atualizar(d: DadosEditaveisDaFeira, agora = new Date()) {
+    const inicio = d.dataInicio ?? this.dataInicio;
+    const fim = d.dataFim ?? this.dataFim;
+    Feira.validarPeriodo(inicio, fim, agora);
+    this.nome = d.nome ?? this.nome;
+    this.descricao = d.descricao ?? this.descricao;
+    this.endereco = d.endereco ?? this.endereco;
+    this.latitude = d.latitude ?? this.latitude;
+    this.longitude = d.longitude ?? this.longitude;
+    this.dataInicio = inicio;
+    this.dataFim = fim;
+  }
 }
+
+export type DadosEditaveisDaFeira = Partial<{
+  nome: string;
+  descricao: string;
+  endereco: string;
+  latitude: number;
+  longitude: number;
+  dataInicio: Date;
+  dataFim: Date;
+}>;
 
 export type NovaFeira = {
   nome: string;
