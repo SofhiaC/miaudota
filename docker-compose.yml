@@ -6,6 +6,16 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  sqlserver:          # banco de feiras (em produção: Azure SQL Database)
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Miaudota#Dev2026
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:
@@ -33,5 +43,6 @@ services:
 
 volumes:
   mongo_data:
+  sqlserver_data:
   rabbitmq_data:
   n8n_data:

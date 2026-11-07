@@ -22,6 +22,10 @@ import { ListarMeusAnimais } from './casos-de-uso/listar-meus-animais/listar-meu
 import { ListarMeusAnimaisController } from './casos-de-uso/listar-meus-animais/listar-meus-animais.controller';
 import { BuscarAnimal } from './casos-de-uso/buscar-animal/buscar-animal.use-case';
 import { BuscarAnimalController } from './casos-de-uso/buscar-animal/buscar-animal.controller';
+import { AtualizarAnimal } from './casos-de-uso/atualizar-animal/atualizar-animal.use-case';
+import { AtualizarAnimalController } from './casos-de-uso/atualizar-animal/atualizar-animal.controller';
+import { ExcluirAnimal } from './casos-de-uso/excluir-animal/excluir-animal.use-case';
+import { ExcluirAnimalController } from './casos-de-uso/excluir-animal/excluir-animal.controller';
 import { FavoritarAnimal } from './casos-de-uso/favoritar-animal/favoritar-animal.use-case';
 import { FavoritarAnimalController } from './casos-de-uso/favoritar-animal/favoritar-animal.controller';
 import { ListarFavoritos } from './casos-de-uso/listar-favoritos/listar-favoritos.use-case';
@@ -61,6 +65,8 @@ import { RemoverDadosDoUsuarioHandler } from './casos-de-uso/remover-dados-do-us
     SugerirAnimaisController,
     ListarMeusAnimaisController,
     BuscarAnimalController,
+    AtualizarAnimalController,
+    ExcluirAnimalController,
     FavoritarAnimalController,
     ListarFavoritosController,
     RemoverFavoritoController,
@@ -72,7 +78,7 @@ import { RemoverDadosDoUsuarioHandler } from './casos-de-uso/remover-dados-do-us
     ConsultarAnimaisController,
   ],
   providers: [
-    CadastrarAnimal, ListarAnimais, SugerirAnimais, ListarMeusAnimais, BuscarAnimal,
+    CadastrarAnimal, ListarAnimais, SugerirAnimais, ListarMeusAnimais, BuscarAnimal, AtualizarAnimal, ExcluirAnimal,
     FavoritarAnimal, ListarFavoritos, RemoverFavorito,
     SolicitarAdocao, ListarSolicitacoesEnviadas, ListarSolicitacoesRecebidas, BuscarSolicitacao, ResponderSolicitacao,
     ConsultarAnimais, DetalharSolicitacoes, RemoverDadosDoUsuario, RemoverDadosDoUsuarioHandler,

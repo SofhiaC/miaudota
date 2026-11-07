@@ -1,7 +1,7 @@
 # Miaudota
 
 App React Native (Expo) + backend em **seis processos NestJS**: API Gateway, BFF Mobile, três serviços
-(usuários, adoção, geolocalização) e a função de notificação. Cada serviço tem o seu banco MongoDB; falam por REST interno e por eventos no RabbitMQ.
+(usuários, adoção, geolocalização) e a função de notificação. Cada serviço tem o seu banco (usuários e adoção em MongoDB, geolocalização em Azure SQL); falam por REST interno e por eventos no RabbitMQ.
 Os e-mails saem pelo **n8n** (webhook), que entrega ao SMTP — em desenvolvimento, o **Mailpit**.
 
 ```
@@ -18,7 +18,7 @@ app mobile ──> API Gateway :3000 ──> BFF Mobile :3001 ──┬─> usua
 
 ## Rodando
 
-1. Infra (Mongo, RabbitMQ, n8n, Mailpit):  `docker compose up -d`
+1. Infra (Mongo, SQL Server, RabbitMQ, n8n, Mailpit):  `docker compose up -d`
 2. **Uma vez só**, configure o n8n (veja "Configurando o n8n" abaixo).
 3. Backend:
    ```
@@ -90,7 +90,7 @@ Tudo em `mobile/tema.js` (cores e fontes) e `mobile/componentes/` (peças reutil
 | BFF Mobile | 3001 | roteia para o serviço dono do assunto; troca os ids dos animais das feiras pelos dados completos |
 | usuarios | 3101 | cadastro, login (emite o JWT), perfil, exclusão de conta |
 | adocao | 3102 | animais, favoritos, sugestões, solicitações de adoção |
-| geolocalizacao | 3103 | feiras, busca por proximidade, animais levados à feira (só ids) |
+| geolocalizacao | 3103 | feiras (CRUD), busca por proximidade, animais levados à feira (só ids). Banco Azure SQL. Swagger em `/docs` |
 | notificacao | — | consome eventos e aciona o n8n; sem HTTP e sem banco |
 
 Segurança entre componentes: o JWT só é validado no gateway. Gateway, BFF e serviços se falam com a `INTERNAL_API_KEY`;
@@ -114,7 +114,7 @@ Se o RabbitMQ cair, os eventos ficam em memória e saem quando ele voltar.
 ```
 domain/           entidades e regras + portas dos repositórios
 application/      portas para outros serviços (gateways) e serviços de apoio
-infrastructure/   MongoDB, gateways HTTP, bcrypt, JWT, webhook do n8n
+infrastructure/   MongoDB / Azure SQL, gateways HTTP, bcrypt, JWT, webhook do n8n
 presentation/     presenters (entidade -> JSON)
 casos-de-uso/     uma pasta por caso de uso: <nome>.use-case.ts + <nome>.controller.ts (ou .handler.ts para eventos)
 ```

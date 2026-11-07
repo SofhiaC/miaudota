@@ -12,7 +12,9 @@ export abstract class AnimalRepository {
   abstract sugerirPorEspecies(especies: string[], idUsuario: string, excetoIds: string[]): Promise<Animal[]>;
   abstract contarDisponiveisDoDono(idDono: string, ids: string[]): Promise<number>;
   abstract buscarDisponiveisPorIds(ids: string[]): Promise<Animal[]>;
+  /** Grava os dados do animal e se ele está disponível (atualização completa). */
   abstract salvar(animal: Animal): Promise<void>;
+  abstract excluir(id: string): Promise<void>;
   abstract excluirDoDono(idDono: string): Promise<void>;
 }
 
