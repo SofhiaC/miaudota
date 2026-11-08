@@ -32,7 +32,8 @@ REPOS = {
     scripts={'start:bff': 'bff-mobile', 'start:gateway': 'api-gateway', 'start:notificacao': 'notificacao'},
     endpoints=['`GET /aggregated-data` — junta animais (MongoDB), feiras (Azure SQL) e o indicador da Azure Function numa resposta só',
                '`/usuarios/*`, `/animais/*`, `/favoritos/*`, `/solicitacoes/*`, `/feiras/*` — encaminhados aos microsserviços',
-               'Swagger do BFF em `/docs`'],
+               'Swagger do BFF em `/docs`',
+               'Documentação dos eventos (RabbitMQ) em [`eventcatalog/`](eventcatalog): eventos, publicadores, consumidores, filas e DLQ'],
     arquitetura='O BFF e o gateway não importam código dos microsserviços: falam com eles só por HTTP (portas e adaptadores em `bff-mobile/aggregated-data`). O caso de uso `AgregarDados` depende de portas (`AnimaisFonte`, `FeirasFonte`, `IndicadorFonte`) e não sabe se a resposta vem de HTTP ou da Azure Function.',
     porta_padrao=3001, compose=False),
   'miaudota-ms-mongo': dict(
@@ -147,7 +148,7 @@ USER node
 EXPOSE {' '.join(str(s[2]) for s in cfg['servicos'] if s[2])}
 CMD ["sh", "-c", "node dist/${{SERVICO}}/main.js"]
 ''')
-    escrever(d / '.dockerignore', 'node_modules\ndist\n.env\n*.log\ntsconfig.tsbuildinfo\n.git\n')
+    escrever(d / '.dockerignore', 'node_modules\ndist\n.env\n*.log\ntsconfig.tsbuildinfo\n.git\neventcatalog\n')
     escrever(d / '.gitignore', 'node_modules\ndist\n.env\n*.log\ntsconfig.tsbuildinfo\n.DS_Store\n')
 
     pub = ['#!/usr/bin/env bash', '# Constrói e publica as imagens deste repositório no Docker Hub.', '# Antes: docker login   (use a conta ' + HUB + ')', 'set -euo pipefail', 'cd "$(dirname "$0")"']
@@ -346,6 +347,11 @@ def main():
     SAIDA.mkdir()
     for nome, cfg in REPOS.items():
         montar_backend(nome, cfg); print('ok', nome)
+    ec = RAIZ / 'eventcatalog'
+    if ec.exists():
+        shutil.copytree(ec, SAIDA / 'miaudota-bff' / 'eventcatalog',
+                        ignore=shutil.ignore_patterns('node_modules', 'dist', '.eventcatalog', '.astro', '.env'))
+        print('ok eventcatalog -> miaudota-bff/eventcatalog')
     montar_function(); print('ok miaudota-function')
     montar_frontend(); print('ok miaudota-frontend')
     escrever(SAIDA / 'publicar-todas.sh', '''#!/usr/bin/env bash
