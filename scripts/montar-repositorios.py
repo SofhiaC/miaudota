@@ -14,6 +14,9 @@ VERSAO = 'v1'
 INTEGRANTES = ['Sofhia Chromiec', 'Fernanda Giacobbo', 'Júlia Melo', 'Pedro Serafim']
 DISCIPLINA = 'Arquitetura de Soluções em Nuvem (PUCPR) - PJBL Miaudota - Entrega 3'
 PROFESSOR = 'Prof. Manoel Valerio da Silveira Neto'
+DOMINIO_NUVEM = 'proudground-4968a7f1.canadacentral.azurecontainerapps.io'  # Azure Container Apps (miaudota-env)
+URL_FUNCTION = 'https://miaudota-func-agb9gabrehe6aye2.southafricanorth-01.azurewebsites.net/api/indicador-adocao'
+URL_FRONTEND = 'https://red-mushroom-01f218510.4.azurestaticapps.net'
 GH = 'https://github.com/SofhiaC'  # ajuste se os repositórios forem criados em outra conta/organização
 
 # ---- o que vai em cada repositório ----------------------------------------------------------
@@ -82,6 +85,17 @@ def tabela_imagens(servicos):
     l = ['| Serviço | Imagem no Docker Hub |', '|---|---|']
     for _, img, _, desc in servicos: l.append(f'| {desc} | `{imagem(img)}` |')
     return '\n'.join(l)
+
+def tabela_urls(servicos):
+    linhas = ['| Serviço | URL pública | Swagger |', '|---|---|---|']
+    for _, img, porta, desc in servicos:
+        if porta is None:
+            linhas.append(f'| {desc} | sem URL pública (container `miaudota-{img}` na Azure, consome a fila) | n/a |')
+            continue
+        url = f'https://miaudota-{img}.{DOMINIO_NUVEM}'
+        swagger = 'n/a (ponto de entrada, repassa ao BFF)' if img == 'gateway' else f'{url}/docs'
+        linhas.append(f'| {desc} | {url} | {swagger} |')
+    return '\n'.join(linhas)
 
 # ---- repositórios de backend ---------------------------------------------------------------
 def montar_backend(nome, cfg):
@@ -210,11 +224,11 @@ Crie um `.env` a partir de `.env.example` (chaves, banco e RabbitMQ) e rode:
 {runs}
 ```
 
-URLs na nuvem: *(preencher após o deploy)*
+URLs na nuvem (Azure Container Apps):
 
-| Serviço | URL pública | Swagger |
-|---|---|---|
-| {cfg['servicos'][0][3]} | _a preencher_ | _a preencher_/docs |
+{tabela_urls(cfg['servicos'])}
+
+O frontend publicado (Azure Static Web Apps) está em {URL_FRONTEND}.
 
 ### 2. Localmente com Node
 
@@ -304,7 +318,7 @@ npm start              # precisa do Azure Functions Core Tools (func); sobe em h
 docker run --rm -p 7071:80 {imagem('function')}
 ```
 
-URL na nuvem: *(preencher após o deploy)* — `https://<app>.azurewebsites.net/api/indicador-adocao`
+URL na nuvem (Azure Functions): `{URL_FUNCTION}` (exige a chave da função no cabeçalho `x-functions-key` ou em `?code=`).
 
 ## Testes
 
