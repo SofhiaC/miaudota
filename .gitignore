@@ -5,3 +5,4 @@ dist
 
 # pastas geradas por scripts/montar-repositorios.py (cada uma vira um repositório próprio)
 repositorios
+scripts/segredos.env

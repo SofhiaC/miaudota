@@ -317,23 +317,14 @@ npm test
 {chr(10).join('- ' + n for n in INTEGRANTES)}
 ''')
 
-# ---- repositório do frontend (reservado) ---------------------------------------------------
+# ---- repositório do frontend ---------------------------------------------------------------
 def montar_frontend():
     d = SAIDA / 'miaudota-frontend'
-    escrever(d / 'README.md', f'''# Miaudota - Frontend Web
-
-SPA em React que consome **somente o BFF** (nunca os microsserviços diretamente).
-
-> {DISCIPLINA}. Integrantes em [GRUPO.md](GRUPO.md).
-
-*(Em construção: a implementação do frontend é a próxima etapa do projeto.)*
-
-## Integrantes
-
-{chr(10).join('- ' + n for n in INTEGRANTES)}
-''')
+    origem = RAIZ / 'frontend'
+    # o README completo, o Dockerfile e o código vivem em ./frontend (node_modules/dist ficam de fora)
+    shutil.copytree(origem, d, ignore=shutil.ignore_patterns('node_modules', 'dist'))
     escrever(d / 'GRUPO.md', grupo_md())
-    escrever(d / '.gitignore', 'node_modules\ndist\n.env\n.DS_Store\n')
+    (d / 'publicar.sh').chmod(0o755)
 
 # ---- orquestração --------------------------------------------------------------------------
 def main():
@@ -347,7 +338,7 @@ def main():
 # Publica as imagens de todos os repositórios (login antes: docker login).
 set -euo pipefail
 cd "$(dirname "$0")"
-for r in miaudota-bff miaudota-ms-mongo miaudota-ms-sql miaudota-function; do
+for r in miaudota-bff miaudota-ms-mongo miaudota-ms-sql miaudota-function miaudota-frontend; do
   echo "== $r"; "./$r/publicar.sh"
 done
 ''', exec_=True)
